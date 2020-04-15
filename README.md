@@ -2,7 +2,15 @@
 
 ![build](https://github.com/warnyul/docker-android-build-tools/workflows/build/badge.svg) ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/warnyul/android-build-tools/latest) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/warnyul/android-build-tools/latest) [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
-This is an Ubuntu Xential based Docker image and is image only contains Open JDK 8 JRE, Android Tools and Android Build Tools.
+This is an Ubuntu Xential based Docker image and is image only contains Open JDK 8 JRE, Android SDK Tools and Android SDK Build Tools.
+
+## Usage
+
+You can use all commands from [Android SDK Tools or Android SDK Build Tools](https://developer.android.com/studio/command-line). You can mount a volume optionally, if you would like to pass files to commands.
+
+```
+docker run --rm -v "$(pwd)":"$(pwd)" warnyul/android-build-tools apkanalyzer
+```
 
 ## Build
 
