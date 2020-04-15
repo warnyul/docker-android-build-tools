@@ -14,7 +14,7 @@ cd docker-android-build-tools
 
 ## Why Ubuntu Xential?
 
-I use this image to build [redex](https://fbredex.com) in a Docker image. [The documentation of redex](https://fbredex.com/docs/installation) refers to this.
+I use this image to build [redex](https://fbredex.com) in a Docker container. [The documentation of redex](https://fbredex.com/docs/installation) refers to this.
 
 ## License
 
