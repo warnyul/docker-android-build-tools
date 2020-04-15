@@ -12,6 +12,16 @@ You can use all commands from [Android SDK Tools or Android SDK Build Tools](htt
 docker run --rm -v "$(pwd)":"$(pwd)" warnyul/android-build-tools apkanalyzer
 ```
 
+Or if you want to use platform tools or other Android SDK components, just use this image as parent:
+
+```
+FROM warnyul/android-build-tools:{VERSION or latest}
+
+# Install platform tools
+RUN yes | sdkmanager "platforms;android-29"
+
+```
+
 ## Build
 
 ```
