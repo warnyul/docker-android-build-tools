@@ -56,7 +56,7 @@ done
 echo $BUILD_TOOLS_VERSION
 
 # Build
-docker build -t "$IMAGE:$BUILD_TOOLS_VERSION" .
+docker build --build-arg ANDROID_BUILD_TOOLS_VERSION=$ANDROID_BUILD_TOOLS_VERSION -t "$IMAGE:$BUILD_TOOLS_VERSION" .
 
 if $LATEST; then
     docker tag "$IMAGE:$BUILD_TOOLS_VERSION" "$IMAGE:latest"
