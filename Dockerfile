@@ -20,7 +20,8 @@ ENV ANDROID_SDK_FILE_NAME commandlinetools-linux-${ANDROID_TOOLS_VERSION}_latest
 ENV ANDROID_SDK_URL https://dl.google.com/android/repository/${ANDROID_SDK_FILE_NAME}
 ENV ANDROID_HOME /opt/android-sdk-linux
 ENV ANDROID_SDK ${ANDROID_HOME}
-ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
+ENV ANDROID_BUILD_TOOLS ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}
+ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_BUILD_TOOLS}
 
 # Download the android tools and install the build tools
 RUN mkdir -p ${ANDROID_HOME} && \
