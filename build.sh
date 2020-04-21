@@ -7,7 +7,8 @@ read -r -d '' USAGE <<- EOM
     Usage: ./build.sh [OPTIONS]\n
     \n
     Options:\n
-    --build-tools-version=VERSION \t Android build tools version\n
+    --build-tools-version=VERSION \t Android build tools version. Default: 29.0.3\n
+    --platform-version \t\t Android platform version. Default same as the build tools version.\n
     -l, --latest \t\t\t Flag build to latest\n
     -lp, --local-push \t\t Push to a local repository. (always flag build to latest)\n
     -p, --push \t\t\t Push image to docker hub\n
@@ -23,6 +24,7 @@ LOCAL_PUSH=false
 PUSH=false
 LATEST=false
 BUILD_TOOLS_VERSION="29.0.3"
+PLATFORM_VERSION=$(echo $BUILD_TOOLS_VERSION | cut -d'.' -f1)
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -30,6 +32,14 @@ while [ $# -gt 0 ]; do
             BUILD_TOOLS_VERSION="${1#*=}"
             if [ -z $BUILD_TOOLS_VERSION ]; then
                 echo -e "\n --build-tools-version is required.\n See './build.sh --help'.\n"
+                echo -e $USAGE
+                exit 1
+            fi
+        ;;
+        --platform-version=*)
+            PLATFORM_VERSION="${1#*=}"
+            if [ -z $PLATFORM_VERSION ]; then
+                echo -e "\n --platform-version is required.\n See './build.sh --help'.\n"
                 echo -e $USAGE
                 exit 1
             fi
@@ -54,7 +64,10 @@ while [ $# -gt 0 ]; do
 done
 
 # Build
-docker build --build-arg ANDROID_BUILD_TOOLS_VERSION=$BUILD_TOOLS_VERSION -t "$IMAGE:$BUILD_TOOLS_VERSION" .
+docker build \
+    --build-arg ANDROID_BUILD_TOOLS_VERSION=$BUILD_TOOLS_VERSION \
+    --build-arg ANDROID_PLATFORM_VERSION=$PLATFORM_VERSION \
+     -t "$IMAGE:$BUILD_TOOLS_VERSION" .
 
 if $LATEST; then
     docker tag "$IMAGE:$BUILD_TOOLS_VERSION" "$IMAGE:latest"
