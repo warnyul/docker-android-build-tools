@@ -37,6 +37,7 @@ function autoRelease() {
                 echo "$dockerImageVersion" >> .publishedVersions
             fi
             docker rmi -f --no-prune $(docker images 'warnyul/android-build-tools' -a -q)
+            docker system prune -all --force --volumes
         fi
     done <<< "$buildToolsVersions"
     rm -rf METADATA
