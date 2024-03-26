@@ -7,7 +7,7 @@ function trim() {
 }
 
 function readBuildToolsVersions() {
-    sdkmanager --list | grep build-tools | cut -d'|' -f1 | cut -d';' -f2 | trim
+    "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --list | grep build-tools | cut -d'|' -f1 | cut -d';' -f2 | trim
 }
 
 function autoRelease() {
