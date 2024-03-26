@@ -72,7 +72,7 @@ docker build \
     -t "$IMAGE":"$IMAGE_VERSION" .
 
 # Start a local registry if necessary
-if [ "$PUSH_TO_LOCAL" == "true" && "$PUSH" == "true" ]; then
+if [ "$PUSH_TO_LOCAL" == "true" ] && [ "$PUSH" == "true" ]; then
     docker run -d -p 5000:5000 --restart=always --name registry registry 2>&1
 fi 
 
@@ -82,7 +82,7 @@ if [ "$LATEST" == "true" ]; then
 fi
 
 # Push the image
-echo push "$IMAGE":"$IMAGE_VERSION"
 if [ "$PUSH" == "true" ]; then
-    docker push "$IMAGE"
+    echo push "$IMAGE":"$IMAGE_VERSION"
+    docker image push --all-tags "$IMAGE"
 fi
