@@ -2,7 +2,7 @@
 
 ![build](https://github.com/warnyul/docker-android-build-tools/workflows/build/badge.svg) ![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/warnyul/android-build-tools/latest) ![Docker Image Size (tag)](https://img.shields.io/docker/image-size/warnyul/android-build-tools/latest) [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 
-This is an Ubuntu Xential based Docker image and is image only contains Open JDK 8 JRE, Android SDK Tools, Android SDK Build Tools and the Platform which version belongs to the Build Tools's version. For instance: `warnyul/android-build-tools:29.0.3` image containts `platform;android-29`, and the `warnyul/android-build-tools:28.0.0` image contains `platform;android-28` and so on.
+This is an Ubuntu Bionic based Docker image and is image only contains Open JDK 17 JRE, Android SDK Tools, Android SDK Build Tools and the Platform which version belongs to the Build Tools's version. For instance: `warnyul/android-build-tools:29.0.3` image containts `platform;android-29`, and the `warnyul/android-build-tools:28.0.0` image contains `platform;android-28` and so on.
 
 ## Usage
 
