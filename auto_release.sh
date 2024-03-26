@@ -18,9 +18,11 @@ function autoRelease() {
     local -r commandLineToolsRevisionNumber=$(echo "$downloadUrl" | cut -d'_' -f1 | cut -d'-' -f3)
     local -r buildToolsVersions=$(readBuildToolsVersions | sort | uniq )
     local -r latest=$(echo "$buildToolsVersions" | grep -v '-' | tail -n 1)
+    local -r ubuntuDistribution=$(grep -Eo 'FROM ubuntu:(.*)' Dockerfile | cut -d':' -f2)
+    local -r openJdkVersion=$(grep -Eo 'openjdk-([[:digit:]]+)' Dockerfile | cut -d'-' -f2)
 
-    while read -r line; do      
-        local dockerImageVersion="$line"-bionic-openjdk17
+    while read -r line; do
+        local dockerImageVersion="$line"-"$ubuntuDistribution"-openjdk"$openJdkVersion"
         if [ "$(grep "\b${dockerImageVersion/-/\-}\b" .publishedVersions)" != "" ]; then
             echo "skip ${dockerImageVersion}"
         else
