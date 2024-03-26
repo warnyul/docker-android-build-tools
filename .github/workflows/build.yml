@@ -1,6 +1,7 @@
 name: build
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master ]
   pull_request:
@@ -10,9 +11,11 @@ jobs:
 
   build:
     if: "! contains(toJSON(github.event.commits.*.message), 'skip ci')"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
     - name: Build the Docker image
-      run: ./build.sh
+      shell: bash
+      run: |
+        ./build.sh -d

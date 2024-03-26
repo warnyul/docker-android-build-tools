@@ -10,21 +10,18 @@ read -r -d '' USAGE <<- EOM
     --build-tools-version=VERSION \t Android build tools version. Default: 29.0.3\n
     --platform-version \t\t Android platform version. Default same as the build tools version.\n
     -l, --latest \t\t\t Flag build to latest\n
-    -lp, --local-push \t\t Push to a local repository. (always flag build to latest)\n
-    -p, --push \t\t\t Push image to docker hub\n
+    -d, --dry-run \t\t Push to a local repository. (always flag build to latest). Without push the image to the docker hub.\n
     -h, --help \t\t\t Print usage description\n
 EOM
 
 IMAGE_NAME=android-build-tools
-IMAGE=warnyul/$IMAGE_NAME
-LOCAL_IMAGE=localhost:5000/$IMAGE_NAME
+IMAGE=warnyul/"$IMAGE_NAME"
 
 # Parameters
 LOCAL_PUSH=false
-PUSH=false
 LATEST=false
-BUILD_TOOLS_VERSION="29.0.3"
-PLATFORM_VERSION=$(echo $BUILD_TOOLS_VERSION | cut -d'.' -f1)
+BUILD_TOOLS_VERSION="30.0.0"
+PLATFORM_VERSION=$(echo "$BUILD_TOOLS_VERSION" | cut -d'.' -f1)
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -32,7 +29,7 @@ while [ $# -gt 0 ]; do
             BUILD_TOOLS_VERSION="${1#*=}"
             if [ -z $BUILD_TOOLS_VERSION ]; then
                 echo -e "\n --build-tools-version is required.\n See './build.sh --help'.\n"
-                echo -e $USAGE
+                echo -e "$USAGE"
                 exit 1
             fi
         ;;
@@ -40,49 +37,45 @@ while [ $# -gt 0 ]; do
             PLATFORM_VERSION="${1#*=}"
             if [ -z $PLATFORM_VERSION ]; then
                 echo -e "\n --platform-version is required.\n See './build.sh --help'.\n"
-                echo -e $USAGE
+                echo -e "$USAGE"
                 exit 1
             fi
         ;;
         -l|--latest)
             LATEST=true
         ;;
-        -lp|--local-push)
+        -d|--dry-run)
             LATEST=true
             LOCAL_PUSH=true
         ;;
-        -p|--push)
-            PUSH=true
-        ;;
         -h|--help|*)
             echo -e "\n Unknown argument: '$1'.\n See './build.sh --help'.\n"
-            echo -e $USAGE
+            echo -e "$USAGE"
             exit 1
         ;;
     esac
     shift
 done
 
+IMAGE_VERSION="$BUILD_TOOLS_VERSION"-bionic-openjdk17
+
 # Build
 docker build \
     --build-arg ANDROID_BUILD_TOOLS_VERSION=$BUILD_TOOLS_VERSION \
     --build-arg ANDROID_PLATFORM_VERSION=$PLATFORM_VERSION \
-     -t "$IMAGE:$BUILD_TOOLS_VERSION" .
+    -t "$IMAGE":"$IMAGE_VERSION" .
 
-if $LATEST; then
-    docker tag "$IMAGE:$BUILD_TOOLS_VERSION" "$IMAGE:latest"
+# Start a local registry if necessary
+if "$LOCAL_PUSH" == "true"; then
+    docker tag "$IMAGE":"$IMAGE_VERSION" localhost:5000/"$IMAGE_NAME":"$IMAGE_VERSION"
+    docker run -d -p 5000:5000 --restart=always --name registry registry 2>&1
 fi 
 
-# Publish to a local repo
-if $LOCAL_PUSH; then
-    docker run -d -p 5000:5000 --restart=always --name registry registry 2> /dev/null
-    docker tag "$IMAGE:$BUILD_TOOLS_VERSION" "$LOCAL_IMAGE:$BUILD_TOOLS_VERSION"
-    docker tag "$IMAGE:$BUILD_TOOLS_VERSION" "$LOCAL_IMAGE:latest"
-    docker push $LOCAL_IMAGE
+# Tag as latest if necessary
+if "$LATEST" == "true"; then
+    docker tag "$IMAGE":"$IMAGE_VERSION" "$IMAGE":latest
 fi
 
-# Publish to Docker Hub
-if $PUSH; then
-    docker push $IMAGE
-fi
-
+# Push the image
+echo push "$IMAGE":"$IMAGE_VERSION"
+docker push "$IMAGE"
