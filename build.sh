@@ -22,7 +22,7 @@ IMAGE=warnyul/"$IMAGE_NAME"
 PUSH_TO_LOCAL=false
 PUSH=false
 LATEST=false
-BUILD_TOOLS_VERSION="30.0.0"
+BUILD_TOOLS_VERSION="34.0.0"
 PLATFORM_VERSION=$(echo "$BUILD_TOOLS_VERSION" | cut -d'.' -f1)
 
 while [ $# -gt 0 ]; do
@@ -34,6 +34,7 @@ while [ $# -gt 0 ]; do
                 echo -e "$USAGE"
                 exit 1
             fi
+            PLATFORM_VERSION=$(echo "$BUILD_TOOLS_VERSION" | cut -d'.' -f1)
         ;;
         --platform-version=*)
             PLATFORM_VERSION="${1#*=}"
