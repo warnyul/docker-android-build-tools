@@ -36,6 +36,7 @@ function autoRelease() {
             if [ $? == 0 ]; then
                 echo "$dockerImageVersion" >> .publishedVersions
             fi
+            docker rmi -f --no-prune $(docker images 'warnyul/android-build-tools' -a -q)
         fi
     done <<< "$buildToolsVersions"
     rm -rf METADATA
