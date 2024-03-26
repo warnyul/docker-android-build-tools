@@ -1,0 +1,33 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Run every day at midnight UTC
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Docker Hub login
+        shell: bash
+        run: |
+          docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Publish
+        shell: bash
+        run: |
+          ./auto_release.sh
+      - name: Push changes back
+        uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
+        with:
+          commit_message: 'chore: Update .publishedVersions'
+          repository: .publishedVersions
+      - name: Docker Hub logout
+        if: always()
+        shell: bash
+        run: |
+          docker logout
