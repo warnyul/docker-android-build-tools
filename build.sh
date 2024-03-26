@@ -19,7 +19,7 @@ IMAGE_NAME=android-build-tools
 IMAGE=warnyul/"$IMAGE_NAME"
 
 # Parameters
-LOCAL_PUSH=false
+PUSH_TO_LOCAL=false
 PUSH=false
 LATEST=false
 BUILD_TOOLS_VERSION="30.0.0"
@@ -48,7 +48,7 @@ while [ $# -gt 0 ]; do
         ;;
         -d|--dry-run)
             LATEST=true
-            LOCAL_PUSH=true
+            PUSH_TO_LOCAL=true
             IMAGE=localhost:5000/"$IMAGE_NAME"
         ;;
         -p|--push)
@@ -72,7 +72,7 @@ docker build \
     -t "$IMAGE":"$IMAGE_VERSION" .
 
 # Start a local registry if necessary
-if [ "$LOCAL_PUSH" == "true" ]; then
+if [ "$PUSH_TO_LOCAL" == "true" && "$PUSH" == "true" ]; then
     docker run -d -p 5000:5000 --restart=always --name registry registry 2>&1
 fi 
 

@@ -26,11 +26,11 @@ function autoRelease() {
         else
             echo "build ${dockerImageVersion}"
             if [ "$line" == "$latest" ]; then
-                local latestArg='-l'
+                local latestArg='--latest'
             else
                 local latestArg=''
             fi
-            ./build.sh -p --build-tools-version=${line} ${latestArg}
+            ./build.sh --push --build-tools-version=${line} ${latestArg}
             if [ $? == 0 ]; then
                 echo "$dockerImageVersion" >> .publishedVersions
             fi
