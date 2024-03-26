@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:jammy
 
 LABEL maintainer="Balázs Varga <warnyul@gmail.com>"
 LABEL description="Android Build Tools"
