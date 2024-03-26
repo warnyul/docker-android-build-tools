@@ -31,7 +31,6 @@ function autoRelease() {
                 local latestArg=''
             fi
             ./build.sh -d --build-tools-version=${line} ${latestArg}
-            echo "ok"
             if [ $? == 0 ]; then
                 echo "$dockerImageVersion" >> .publishedVersions
             fi
