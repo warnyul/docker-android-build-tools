@@ -30,7 +30,7 @@ function autoRelease() {
             else
                 local latestArg=''
             fi
-            ./build.sh -d --build-tools-version=${line} ${latestArg}
+            ./build.sh -p --build-tools-version=${line} ${latestArg}
             if [ $? == 0 ]; then
                 echo "$dockerImageVersion" >> .publishedVersions
             fi
