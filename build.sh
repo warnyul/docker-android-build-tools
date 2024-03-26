@@ -47,6 +47,7 @@ while [ $# -gt 0 ]; do
         -d|--dry-run)
             LATEST=true
             LOCAL_PUSH=true
+            IMAGE=localhost:5000/"$IMAGE_NAME"
         ;;
         -h|--help|*)
             echo -e "\n Unknown argument: '$1'.\n See './build.sh --help'.\n"
@@ -67,7 +68,6 @@ docker build \
 
 # Start a local registry if necessary
 if "$LOCAL_PUSH" == "true"; then
-    docker tag "$IMAGE":"$IMAGE_VERSION" localhost:5000/"$IMAGE_NAME":"$IMAGE_VERSION"
     docker run -d -p 5000:5000 --restart=always --name registry registry 2>&1
 fi 
 
