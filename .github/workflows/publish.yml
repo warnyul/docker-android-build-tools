@@ -6,10 +6,28 @@ on:
     - cron: '0 0 * * *'  # Run every day at midnight UTC
 
 jobs:
-  publish:
+  buildMatrix:
     runs-on: ubuntu-22.04
     permissions:
+      contents: read
+    outputs:
+      BUILD_MATRIX: ${{ steps.generate.outputs.BUILD_MATRIX }}
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Generate build matrix
+        id: generate
+        shell: bash
+        run: |
+          ./generateBuildMatrix.sh
+  publish:
+    runs-on: ubuntu-22.04
+    needs:
+      - buildMatrix
+    permissions:
       contents: write
+    strategy:
+      matrix:
+        agp: ${{ fromJson(needs.buildMatrix.outputs.BUILD_MATRIX) }}
     steps:
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
       - name: Docker Hub login
@@ -22,13 +40,7 @@ jobs:
       - name: Publish
         shell: bash
         run: |
-          ./auto_release.sh
-      - name: Push changes back
-        if: always()
-        uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
-        with:
-          commit_message: 'chore: Update .publishedVersions'
-          file_pattern: '.publishedVersions'
+          ./publish.sh ${{ matrix.agp }}
       - name: Docker Hub logout
         if: always()
         shell: bash
