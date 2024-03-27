@@ -3,11 +3,11 @@ FROM ubuntu:bionic
 LABEL maintainer="Balázs Varga <warnyul@gmail.com>"
 LABEL description="Android Build Tools"
 
-ARG ANDROID_COMMAND_LINE_TOOLS=11076708
+ARG ANDROID_COMMAND_LINE_TOOLS_VERSION=11076708
 ARG ANDROID_PLATFORM_VERSION=34
 ARG ANDROID_BUILD_TOOLS_VERSION=34.0.0
 
-ENV ANDROID_SDK_FILE_NAME commandlinetools-linux-${ANDROID_COMMAND_LINE_TOOLS}_latest.zip
+ENV ANDROID_SDK_FILE_NAME commandlinetools-linux-${ANDROID_COMMAND_LINE_TOOLS_VERSION}_latest.zip
 ENV ANDROID_SDK_URL https://dl.google.com/android/repository/${ANDROID_SDK_FILE_NAME}
 ENV ANDROID_HOME /opt/android-sdk-linux
 ENV ANDROID_SDK ${ANDROID_HOME}

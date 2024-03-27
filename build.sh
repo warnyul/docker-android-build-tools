@@ -24,6 +24,7 @@ PUSH=false
 LATEST=false
 BUILD_TOOLS_VERSION="34.0.0"
 PLATFORM_VERSION=$(echo "$BUILD_TOOLS_VERSION" | cut -d'.' -f1)
+COMMAND_LINE_TOOLS_VERSION=11076708
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -35,6 +36,14 @@ while [ $# -gt 0 ]; do
                 exit 1
             fi
             PLATFORM_VERSION=$(echo "$BUILD_TOOLS_VERSION" | cut -d'.' -f1)
+        ;;
+        --command-line-tools-version=*)
+            COMMAND_LINE_TOOLS_VERSION="${1#*=}"
+            if [ -z $COMMAND_LINE_TOOLS_VERSION ]; then
+                echo -e "\n --command-line-tools-version is required.\n See './build.sh --help'.\n"
+                echo -e "$USAGE"
+                exit 1
+            fi
         ;;
         --platform-version=*)
             PLATFORM_VERSION="${1#*=}"
@@ -64,12 +73,16 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-IMAGE_VERSION="$BUILD_TOOLS_VERSION"-bionic-openjdk17
+UBUNTU_DISTRIBUTION=$(grep -Eo 'FROM ubuntu:(.*)' Dockerfile | cut -d':' -f2)
+OPEN_JDK_VERSION=$(grep -Eo 'openjdk-([[:digit:]]+)' Dockerfile | cut -d'-' -f2)
+
+IMAGE_VERSION="${BUILD_TOOLS_VERSION}-${UBUNTU_DISTRIBUTION}-openjdk${OPEN_JDK_VERSION}"
 
 # Build
 docker build \
-    --build-arg ANDROID_BUILD_TOOLS_VERSION=$BUILD_TOOLS_VERSION \
-    --build-arg ANDROID_PLATFORM_VERSION=$PLATFORM_VERSION \
+    --build-arg "ANDROID_COMMAND_LINE_TOOLS_VERSION=$COMMAND_LINE_TOOLS_VERSION" \
+    --build-arg "ANDROID_BUILD_TOOLS_VERSION=$BUILD_TOOLS_VERSION" \
+    --build-arg "ANDROID_PLATFORM_VERSION=$PLATFORM_VERSION" \
     -t "$IMAGE":"$IMAGE_VERSION" .
 
 # Start a local registry if necessary
