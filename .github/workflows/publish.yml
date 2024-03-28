@@ -28,7 +28,6 @@ jobs:
     strategy:
       matrix:
         agp: ${{ fromJson(needs.buildMatrix.outputs.BUILD_MATRIX) }}
-        baseImage: ['ubuntu:bionic', 'ubuntu:focal', 'ubuntu:jammy']
     steps:
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
       - name: Docker Hub login
@@ -41,7 +40,7 @@ jobs:
       - name: Publish
         shell: bash
         run: |
-          ./publish.sh ${{ matrix.agp }} ${{ matrix.baseImage }}
+          ./publish.sh ${{ matrix.agp }}
       - name: Docker Hub logout
         if: always()
         shell: bash
