@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM base-image
 
 LABEL maintainer="Balázs Varga <warnyul@gmail.com>"
 LABEL description="Android Build Tools"

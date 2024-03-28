@@ -3,7 +3,7 @@
 function downloadTags() {
     local tags=""
     local page=1
-    local -r pageSize=50
+    local -r pageSize=100
     local hasNext=true
     while [ "$hasNext" != "" ]; do
         local next="https://hub.docker.com/v2/namespaces/warnyul/repositories/android-build-tools/tags?page=$page&page_size=$pageSize"

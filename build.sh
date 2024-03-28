@@ -25,9 +25,18 @@ LATEST=false
 BUILD_TOOLS_VERSION="34.0.0"
 PLATFORM_VERSION=$(echo "$BUILD_TOOLS_VERSION" | cut -d'.' -f1)
 COMMAND_LINE_TOOLS_VERSION=11076708
+BASE_IMAGE="ubuntu:jammy"
 
 while [ $# -gt 0 ]; do
     case "$1" in
+        --base-image=*)
+            BASE_IMAGE="${1#*=}"
+            if [ -z $BASE_IMAGE ]; then
+                echo -e "\n --base-image is required.\n See './build.sh --help'.\n"
+                echo -e "$USAGE"
+                exit 1
+            fi
+        ;;
         --build-tools-version=*)
             BUILD_TOOLS_VERSION="${1#*=}"
             if [ -z $BUILD_TOOLS_VERSION ]; then
@@ -73,10 +82,14 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-UBUNTU_DISTRIBUTION=$(grep -Eo 'FROM ubuntu:(.*)' Dockerfile | cut -d':' -f2)
+UBUNTU_DISTRIBUTION=$(echo "$BASE_IMAGE" | grep -Eo 'ubuntu:(.*)' | cut -d':' -f2)
 OPEN_JDK_VERSION=$(grep -Eo 'openjdk-([[:digit:]]+)' Dockerfile | cut -d'-' -f2)
 
 IMAGE_VERSION="${BUILD_TOOLS_VERSION}-${UBUNTU_DISTRIBUTION}-openjdk${OPEN_JDK_VERSION}"
+
+docker pull "$BASE_IMAGE"
+
+docker tag "$BASE_IMAGE" base-image
 
 # Build
 docker build \
