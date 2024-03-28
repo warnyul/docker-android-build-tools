@@ -31,20 +31,23 @@ function readBuildToolsVersions() {
 function generateBuildMatrix() {
     local -r buildToolsVersions=$(readBuildToolsVersions | sort | uniq )
     local -r latest=$(echo "$buildToolsVersions" | grep -v '-' | tail -n 1)
-    local -r ubuntuDistribution=$(grep -Eo 'FROM ubuntu:(.*)' Dockerfile | cut -d':' -f2)
+    local -r ubuntuDistributions=(bionic focal jammy)
+    local -r ubuntuDistributionsSize=${#ubuntuDistributions[@]}
+    local -r latestUbuntuDistribution=${ubuntuDistributions[$(($ubuntuDistributionsSize-1))]}
     local -r openJdkVersion=$(grep -Eo 'openjdk-([[:digit:]]+)' Dockerfile | cut -d'-' -f2)
     local -r tags=$(downloadTags)
     local matrix=()
 
-    local redexCommitHash=$(git ls-tree HEAD redex | cut -f 1 | cut -f 3 -d' ')
-    while read -r line; do
-        local dockerImageVersion="${line}-${ubuntuDistribution}-openjdk${openJdkVersion}"
-        if [ "$(grep "\b${dockerImageVersion/-/\-}\b" <<< "$tags")" == "" ]; then
-            local isLatest=false
-            [[ "$line" == "$latest" ]] && isLatest=true
-            matrix+=("\"${line}@${isLatest}\"")          
-        fi
-    done <<< "$buildToolsVersions"
+    for ubuntuDistribution in ${ubuntuDistributions[@]}; do
+        while read -r line; do
+            local dockerImageVersion="${line}-${ubuntuDistribution}-openjdk${openJdkVersion}"
+            if [ "$(grep "\b${dockerImageVersion/-/\-}\b" <<< "$tags")" == "" ]; then
+                local isLatest=false
+                [[ "$line" == "$latest" && "$ubuntuDistribution" == "$latestUbuntuDistribution" ]] && isLatest=true
+                matrix+=("\"${ubuntuDistribution}@${line}@${isLatest}\"")          
+            fi
+        done <<< "$buildToolsVersions"
+    done
     echo -n "["
     local -r joined=$(printf ",%s" ${matrix[@]})
     echo -n ${joined:1}
