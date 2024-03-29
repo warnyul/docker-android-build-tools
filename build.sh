@@ -15,6 +15,22 @@ read -r -d '' USAGE <<- EOM
     -h, --help \t\t\t Print usage description\n
 EOM
 
+function trim() {
+    while read -r line; do
+        echo "$line"
+    done
+}
+
+function findPlatformVersion() {
+    local -r platformVersion="$1"
+    local -r findPlatform=$(sdkmanager --list | grep "platform;android-${platformVersion}")
+    if [ "$findPlatform" == "" ]; then
+        "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --list | grep 'platforms;android-[^0-9]' | grep -v Sandbox | head -n 1 | cut -d'|' -f1 | cut -d'-' -f2 | trim
+    else
+        echo "$platformVersion"
+    fi
+}
+
 IMAGE_NAME=android-build-tools
 IMAGE=warnyul/"$IMAGE_NAME"
 
@@ -82,6 +98,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
+PLATFORM_VERSION=$(findPlatformVersion "$PLATFORM_VERSION")
 UBUNTU_DISTRIBUTION=$(echo "$BASE_IMAGE" | grep -Eo 'ubuntu:(.*)' | cut -d':' -f2)
 OPEN_JDK_VERSION=$(grep -Eo 'openjdk-([[:digit:]]+)' Dockerfile | cut -d'-' -f2)
 
