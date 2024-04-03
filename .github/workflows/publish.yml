@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - buildMatrix
+    if: ${{ needs.buildMatrix.outputs.BUILD_MATRIX != '' && toJson(fromJson(needs.buildMatrix.outputs.BUILD_MATRIX)) != '[]' }}
     permissions:
       contents: write
     strategy:
