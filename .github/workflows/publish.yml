@@ -34,7 +34,7 @@ jobs:
       - name: Docker Hub login
         shell: bash
         run: |
-          docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+          docker login --username "$DOCKER_USERNAME" --password-stdin "$DOCKER_PASSWORD"
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
