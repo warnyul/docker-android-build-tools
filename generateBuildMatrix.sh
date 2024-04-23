@@ -56,7 +56,7 @@ function generateBuildMatrix() {
 }
 
 if [ -z $GITHUB_OUTPUT ]; then
-    generateBuildMatrix
+    generateBuildMatrix $@
 else
-    echo "BUILD_MATRIX=$(generateBuildMatrix)" >> "$GITHUB_OUTPUT"
+    echo "BUILD_MATRIX=$(generateBuildMatrix $@)" >> "$GITHUB_OUTPUT"
 fi
