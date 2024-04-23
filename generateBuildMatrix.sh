@@ -29,6 +29,7 @@ function readBuildToolsVersions() {
 # Returns a json array of items. Format of the items: "{agp-version}@{isLatest}"
 #
 function generateBuildMatrix() {
+    local -r force="$1"
     local -r buildToolsVersions=$(readBuildToolsVersions | sort | uniq )
     local -r latest=$(echo "$buildToolsVersions" | grep -v '-' | tail -n 1)
     local -r ubuntuDistributions=(bionic focal jammy)
@@ -41,7 +42,7 @@ function generateBuildMatrix() {
     for ubuntuDistribution in ${ubuntuDistributions[@]}; do
         while read -r line; do
             local dockerImageVersion="${line}-${ubuntuDistribution}-openjdk${openJdkVersion}"
-            if [ "$(grep "\b${dockerImageVersion/-/\-}\b" <<< "$tags")" == "" ]; then
+            if [ "$force" == "true"  || "$(grep "\b${dockerImageVersion/-/\-}\b" <<< "$tags")" == "" ]; then
                 local isLatest=false
                 [[ "$line" == "$latest" && "$ubuntuDistribution" == "$latestUbuntuDistribution" ]] && isLatest=true
                 matrix+=("\"${ubuntuDistribution}@${line}@${isLatest}\"")          
