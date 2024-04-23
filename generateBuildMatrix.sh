@@ -42,7 +42,7 @@ function generateBuildMatrix() {
     for ubuntuDistribution in ${ubuntuDistributions[@]}; do
         while read -r line; do
             local dockerImageVersion="${line}-${ubuntuDistribution}-openjdk${openJdkVersion}"
-            if [ "$force" == "true"  || "$(grep "\b${dockerImageVersion/-/\-}\b" <<< "$tags")" == "" ]; then
+            if [[ "$force" == "true"  || "$(grep "\b${dockerImageVersion/-/\-}\b" <<< "$tags")" == "" ]]; then
                 local isLatest=false
                 [[ "$line" == "$latest" && "$ubuntuDistribution" == "$latestUbuntuDistribution" ]] && isLatest=true
                 matrix+=("\"${ubuntuDistribution}@${line}@${isLatest}\"")          
