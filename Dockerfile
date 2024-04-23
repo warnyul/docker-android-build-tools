@@ -12,7 +12,7 @@ ENV ANDROID_SDK_URL https://dl.google.com/android/repository/${ANDROID_SDK_FILE_
 ENV ANDROID_HOME /opt/android-sdk-linux
 ENV ANDROID_SDK ${ANDROID_HOME}
 ENV ANDROID_BUILD_TOOLS ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}
-ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_BUILD_TOOLS}:${ANDROID_HOME}/cmdline-tools/bin
+ENV PATH ${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_BUILD_TOOLS}:${ANDROID_HOME}/cmdline-tools/latest/bin
 
 # Install requirements
 RUN dpkg --add-architecture i386 && \
@@ -25,7 +25,14 @@ RUN mkdir -p ${ANDROID_HOME} && \
     wget -q ${ANDROID_SDK_URL} && \
     unzip ${ANDROID_SDK_FILE_NAME} && \
     rm ${ANDROID_SDK_FILE_NAME}
-    
+
+# Fix cmdline-tools location
+# https://stackoverflow.com/questions/60925741/cant-execute-apkanalyzer
+# https://stackoverflow.com/questions/65262340/cmdline-tools-could-not-determine-sdk-root
+RUN mkdir -p ${ANDROID_HOME}/latest && \
+    mv ${ANDROID_HOME}/cmdline-tools/* ${ANDROID_HOME}/latest && \
+    mv ${ANDROID_HOME}/latest ${ANDROID_HOME}/cmdline-tools
+
 # Install Android SDK
 RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "tools" "platforms;android-${ANDROID_PLATFORM_VERSION}" "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
 
@@ -33,4 +40,6 @@ RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "tools" "platforms;android-${AND
 RUN apt-get -y remove wget unzip && \
     apt-get -y autoremove && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    unset ANDROID_SDK_FILE_NAME && \
+    unset ANDROID_SDK_URL
