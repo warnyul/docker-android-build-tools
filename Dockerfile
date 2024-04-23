@@ -17,7 +17,7 @@ ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_
 # Install requirements
 RUN dpkg --add-architecture i386 && \
     apt-get -y update && \
-    apt-get -y install openjdk-17-jre wget unzip
+    apt-get -y install openjdk-17-jdk-headless wget unzip
 
 # Download Android SDK
 RUN mkdir -p ${ANDROID_HOME} && \

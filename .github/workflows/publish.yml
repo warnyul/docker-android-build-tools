@@ -2,6 +2,11 @@ name: publish
 
 on:
   workflow_dispatch:
+    inputs:
+      publishAll:
+        required: true
+        type: boolean
+        default: false
   schedule:
     - cron: '0 0 * * *'  # Run every day at midnight UTC
 
@@ -18,7 +23,7 @@ jobs:
         id: generate
         shell: bash
         run: |
-          ./generateBuildMatrix.sh
+          ./generateBuildMatrix.sh "${{ github.event.inputs.publishAll }}"
   publish:
     runs-on: ubuntu-22.04
     needs:
