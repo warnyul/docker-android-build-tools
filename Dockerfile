@@ -12,7 +12,7 @@ ENV ANDROID_SDK_URL https://dl.google.com/android/repository/${ANDROID_SDK_FILE_
 ENV ANDROID_HOME /opt/android-sdk-linux
 ENV ANDROID_SDK ${ANDROID_HOME}
 ENV ANDROID_BUILD_TOOLS ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}
-ENV PATH ${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_BUILD_TOOLS}:${ANDROID_HOME}/cmdline-tools/latest/bin
+ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_BUILD_TOOLS}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/tools/proguard/bin
 
 # Install requirements
 RUN dpkg --add-architecture i386 && \
