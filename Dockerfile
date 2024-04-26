@@ -16,8 +16,8 @@ ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_
 
 # Install requirements
 RUN dpkg --add-architecture i386 && \
-    apt-get -y update && \
-    apt-get -y install openjdk-17-jdk-headless wget unzip
+    apt-get update -q && \
+    apt-get -q --no-install-recommends -y install openjdk-17-jdk-headless wget unzip
 
 # Download Android SDK
 RUN mkdir -p ${ANDROID_HOME} && \
@@ -33,8 +33,16 @@ RUN mkdir -p ${ANDROID_HOME}/latest && \
     mv ${ANDROID_HOME}/cmdline-tools/* ${ANDROID_HOME}/latest && \
     mv ${ANDROID_HOME}/latest ${ANDROID_HOME}/cmdline-tools
 
+# Remove all packages from sdk manager
+RUN yes | sdkmanager --licenses --sdk_root="${ANDROID_HOME}" && \
+    for package in $(sdkmanager --list_installed --sdk_root="${ANDROID_HOME}" | cut -d'|' -f1 | tail -n +5 | head -n -1 | tr -d ' '); do \
+        sdkmanager --uninstall --sdk_root="${ANDROID_HOME}" "$package"; \
+    done
+
 # Install Android SDK
-RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "tools" "platforms;android-${ANDROID_PLATFORM_VERSION}" "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
+RUN sdkmanager --sdk_root="${ANDROID_HOME}" "tools" "platforms;android-${ANDROID_PLATFORM_VERSION}" "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" && \
+    # Remove emulator
+    sdkmanager --uninstall --sdk_root="${ANDROID_HOME}" emulator
 
 # Clean
 RUN apt-get -y remove wget unzip && \
